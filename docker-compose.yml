@@ -1,0 +1,33 @@
+version: "3"
+services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    restart: always
+    ports:
+      - "3050:80"
+    depends_on:
+      - api
+      - client
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    restart: always
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+    environment:
+      - GCLIENT_ID=${GCLIENT_ID}
+      - GCLIENT_SECRET=${GCLIENT_SECRET}
+      - SESSION_SECRET_KEY=${SESSION_SECRET_KEY}
+  client:
+    stdin_open: true
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    restart: always
+    volumes:
+      - /app/node_modules
+      - ./client:/app
